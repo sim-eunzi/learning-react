@@ -89,3 +89,87 @@ React.createElement("h1", { id: 'recipe-0' }, '구운 연어')
 
 리액트 엘리먼트의 type 프로퍼티는 만들고자하는 HTML이나 SVG 엘리먼트의 타입을 지정한다.  
 props 프로퍼티는 DOM을 만들기 위해 필요한 데이터나 자식 엘리먼트를 표현한다.  
+
+## 4.3 React DOM 
+
+리액트 엘리먼트를 만들면 브라우저에서 보고 싶을 것이다.  
+ReactDOM 에는 리액트 엘리먼트를 브라우저에 렌더링하는데 필요한 모든 도구 (`render()`) 가 들어있다.  
+
+리액트 엘리먼트와 그 자식들을 함께 렌더링하기 위해 `ReactDOM.render`를 사용한다.  
+이 함수의 첫 번째 인자는 렌더링할 자식의 리액트 엘리먼트이며,  
+두 번째 인자는 렌더링이 일어날 대상 DOM 노드이다.  
+
+```javascript
+var dish = React.createElement('h1', null, '구운 연어')
+ReactDOM.render(dish, document.getElementById('root'))
+
+// <body>
+//   <div id="root">
+//     <h1>구운 연어</h1>
+//   </div>
+// </body>
+```
+
+dish 엘리먼트를 렌더링하면 "root" id 를 가진 div 의 자식으로 h1 엘리먼트가 추가된다.  
+
+### 4.3.1 자식들 
+
+리액트는 **props.childern** 을 사용해 자식 엘리먼트들을 렌더링한다.  
+텍스트가 아닌 다른 리액트 엘리먼트를 자식으로 렌더링 할 수도 있고, 그렇게 하면 **엘리먼트의 트리**가 생긴다.  
+
+```html
+<ul>
+  <li>연어 900그램</li>
+  <li>신선한 로즈마리 5가지</li>
+  <li>올리브 오일 2스푼</li>
+  <li>작은 레몬 2조각</li>
+  <li>코셔 소금 1티스푼</li>
+  <li>다진 마늘 4쪽</li>
+</ul>
+```
+재료 정보가 들어 있지 않은 리스트를 생각해보자.  
+ul 이 루트 엘리먼트이며, 그 엘리먼트에는 6개의 li 자식 엘리먼트가 있다.  
+위 엘리먼트를 아래처럼 React.createElement 로 나타낼 수 있다.   
+
+```javascript
+const list = React.createElement(
+  "ul",
+  null,
+  React.createElement('li', null, '연어 900그램'),
+  React.createElement('li', null, '신선한 로즈마리 5가지'),
+  React.createElement('li', null, '올리브 오일 2스푼'),
+  React.createElement('li', null, '작은 레몬 2조각'),
+  React.createElement('li', null, '코셔 소금 1티스푼'),
+  React.createElement('li', null, '다진 마늘 4쪽')
+)
+
+console.log(list)
+```
+
+해당 코드를 실행하면 결과는 아래와 같다.  
+
+<img src="./images/04-03-1.png" alt="04-3">
+
+props.children 배열안에 들어가 있는 모습을 볼 수 있다.  
+다음은 section 엘리먼트 안에 조리법이 들어간 html을 리액트 엘리먼트로 만들어보자.  
+
+```javascript
+const items = [
+  '연어 900그램',
+  '신선한 로즈마리 5가지',
+  '올리브 오일 2스푼',
+  '작은 레몬 2조각',
+  '코셔 소금 1티스푼',
+  '다진 마늘 4쪽'
+]
+
+React.createElement(
+  "ul",
+  { className: "ingredients" },
+  items.map((ingredients, i) => React.createElement("li", {key: i}, ingredients))
+)
+```
+
+리액트를 사용하는 경우 가장 큰 장점은 UI 엘리먼트와 데이터를 분리할 수 있다는 점이다.  
+컴포넌트 트리를 편하게 구성하기 위해 자바스크립트 로직을 얼마든지 작성할 수 있다.  
+
