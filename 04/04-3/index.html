@@ -14,27 +14,33 @@
 
   <script>
     const items = [
-    '연어 900그램',
-    '신선한 로즈마리 5가지',
-    '올리브 오일 2스푼',
-    '작은 레몬 2조각',
-    '코셔 소금 1티스푼',
-    '다진 마늘 4쪽'
+      '연어 900그램',
+      '신선한 로즈마리 5가지',
+      '올리브 오일 2스푼',
+      '작은 레몬 2조각',
+      '코셔 소금 1티스푼',
+      '다진 마늘 4쪽'
     ]
 
+    React.createElement(
+      "ul",
+      { className: "ingredients" },
+      items.map(ingredients => React.createElement("li", null, ingredients))
+    )
 
-   const list = React.createElement(
-    "ul",
-    null,
-    React.createElement('li', null, '연어 900그램'),
-    React.createElement('li', null, '신선한 로즈마리 5가지'),
-    React.createElement('li', null, '올리브 오일 2스푼'),
-    React.createElement('li', null, '작은 레몬 2조각'),
-    React.createElement('li', null, '코셔 소금 1티스푼'),
-    React.createElement('li', null, '다진 마늘 4쪽')
-  )
 
-  console.log(list)
+  //  const list = React.createElement(
+  //   "ul",
+  //   null,
+  //   React.createElement('li', null, '연어 900그램'),
+  //   React.createElement('li', null, '신선한 로즈마리 5가지'),
+  //   React.createElement('li', null, '올리브 오일 2스푼'),
+  //   React.createElement('li', null, '작은 레몬 2조각'),
+  //   React.createElement('li', null, '코셔 소금 1티스푼'),
+  //   React.createElement('li', null, '다진 마늘 4쪽')
+  // )
+
+  // console.log(list)
   </script>
 
 </body>

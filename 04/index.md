@@ -173,3 +173,48 @@ React.createElement(
 리액트를 사용하는 경우 가장 큰 장점은 UI 엘리먼트와 데이터를 분리할 수 있다는 점이다.  
 컴포넌트 트리를 편하게 구성하기 위해 자바스크립트 로직을 얼마든지 작성할 수 있다.  
 
+## 4.4 리액트 컴포넌트 
+
+모든 사용자 인터페이스는 여러 부분(버튼, 리스트 제목,, 등) 으로 나눠진다.   
+각 박스에 들어있는 데이터는 서로 다르지만, 안에 사용되는 부품은 같다.  
+리액트에선 이런 각 부분들을 **컴포넌트**라고 부른다.  
+
+컴포넌트를 사용하면 서로 다른 데이터 집합에 대해 같은 DOM 구조를 재사용할 수 있다.  
+엘리먼트를 재사용 가능한 조각으로 나눌수 있는지를 고려해보자.  
+
+```javascript
+// 재료
+const secretIngredients = [
+  "무염 버터 1컵",
+  "크런치 땅콩 버터 1컵",
+  "흑설탕 1컵",
+  "백설탕 1컵",
+  "달걀 2개",
+  "일반 밀가루 2.5 컵",
+  "베이킹 소다 1티스푼",
+  "소금 0.5 티스푼"
+]
+
+function IngredientsList({ items }) {
+  return React.createElement(
+    'ul',
+    { className: 'ingredients' },
+    items.map((ingredient, i) => 
+      React.createElement("li", { key: i }, ingredient)
+    )
+  )
+}
+
+ReactDOM.render(
+  React.createElement(IngredientsList, { items: secretIngredients }, null),
+  document.getElementById("root")
+)
+```
+
+IngredientsList 컴포넌트를 만들어서, props 객체에 items 배열을 넣어,  
+전역 secretIngredients 이 아닌 props 객체를 통해 데이터를 얻게 한다.  
+
+<img src="./images/04-04-1.png" alt="04-3">
+
+IngredientsList 와 관련된 모든 내용은 한 컴포넌트 안에 캡슐화되어 있다.  
+컴포넌트를 처리할 때 모든 것이 컴포넌트 내부에 들어있다.  

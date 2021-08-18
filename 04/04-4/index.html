@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>순수 리액트 예제</title>
+</head>
+<body>
+  <!-- 타켓 컨테이너 -->
+  <div id="root"></div>
+
+  <!-- React와 ReactDOM 라이브러리 -->
+  <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
+
+  <script>
+    // 재료
+    const secretIngredients = [
+      "무염 버터 1컵",
+      "크런치 땅콩 버터 1컵",
+      "흑설탕 1컵",
+      "백설탕 1컵",
+      "달걀 2개",
+      "일반 밀가루 2.5 컵",
+      "베이킹 소다 1티스푼",
+      "소금 0.5 티스푼"
+    ]
+
+    function IngredientsList({ items }) {
+      return React.createElement(
+        'ul',
+        { className: 'ingredients' },
+        items.map((ingredient, i) => 
+          React.createElement("li", { key: i }, ingredient)
+        )
+      )
+    }
+
+    ReactDOM.render(
+      React.createElement(IngredientsList, { items: secretIngredients }, null),
+      document.getElementById("root")
+    )
+  </script>
+
+</body>
+</html>
