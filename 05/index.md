@@ -183,3 +183,37 @@ ReactDOM.render(
 <img src="./images/05-03.png" alt="05-03">
 
 
+## 5.4 리액트 프래그먼트  
+
+앞 절에서는 Menu 컴포넌트를 렌더링했다. 이 컴포넌트는 부모 컴포넌트로, 자식인 Recipe 컴포넌트를 렌더링했다.  
+**리액트 프래그먼트**를 사용해 두 형제 컴포넌트를 렌더링하는 예제를 살펴보자.  
+
+```javascript
+function Cat({name}) {
+  return (
+    <h1> 고양이 이름은 {name} 입니다.</h1>
+    <p>이 고양이는 멋져요</p>
+  )
+}
+ReactDOM.render(<Cat name="나비" />, document.getElementById("root"))
+```
+
+위 코드를 실행하면 **div** 와 같은 태그로 둘러싸지 않아서 에러가 발생한다.  
+이로 인해 불필요한 태그가 만들어지고, 아무 목적도 없이 태그를 작성하게 된다.  
+그래서 리액트 프래그먼트를 사용하면 새로운 태그를 실제로 만들지 않아도 이런 래퍼의 동작을 흉내낼 수 있다.  
+
+```javascript
+function Cat({name}) {
+  return (
+    <React.Fragment>
+      <h1> 고양이 이름은 {name} 입니다.</h1>
+      <p>이 고양이는 멋져요</p>
+    </React.Fragment>
+  )
+}
+ReactDOM.render(<Cat name="나비" />, document.getElementById("root"))
+```
+
+인접한 태그들을 **React.Fragment** 태그로 둘러싸주면 경고가 사라진다.  
+결과 DOM 을 확인해도 DOM을 오염시키는 추가 래퍼 태그를 사용하지 않아도 된다.  
+
