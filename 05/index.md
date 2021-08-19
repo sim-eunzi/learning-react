@@ -54,7 +54,7 @@ JSX에서 데이터를 컴포넌트에 넘길때 중괄호({})로 감싸야한�
 <ul>
   {
     props.ingredients.map((ingredient, i) => (
-      <li key={i}> {ingredient} </li>
+<li key={i}> {ingredient} </li>
     ))
   }
 </ul>
@@ -82,3 +82,104 @@ JSX는 깔끔하고 읽기 쉽지만, 브라우저는 JSX를 해석할 수 없�
 ```
 
 ## 5.3 JSX로 작성하는 레시피  
+
+데이터 배열에는 2가지 조리법이 들어있고, 애플리케이션의 현재 상태를 나타낸다.  
+이 레시피를 가지고 2가지 컴포넌트가 들어있는 UI를 만들 수 있다.  
+
+Menu 컴포넌트는 조리법의 목록을 표시하고, Recipe 컴포넌트는 각 조리법의 UI를 렌더링한다.  
+DOM에 렌더링하는 대상은 Menu 컴포넌트이고, 데이터를 Menu 컴포넌트의 recipes 프로퍼티로 넘긴다.  
+
+```javascript
+// 데이터 
+
+const data = [
+  {
+    name: 'Baked Salmon',
+    ingredients: [
+      { name: '연어', amount: 500, measurements: '그램' },
+      { name: '잣',  amount: 1,   measurements: '컵' },
+      { name: '버터 상추',  amount: 2,   measurements: '컵' },
+      { name: '옐로 스쿼시',  amount: 1,   measurements: '개' },
+      { name: '올리브 오일',  amount: 0.5,   measurements: '컵' },
+      { name: '마늘',  amount: 3,   measurements: '쪽' },
+    ],
+    steps: [
+      '오븐을 180도로 예열한다',
+      '유리 베이킹 그릇에 올리브 오일을 두른다',
+      '연어, 마늘, 잣을 그릇에 담는다',
+      '오븐에서 15분간 익힌다',
+      '옐로 스쿼시를 추가하고 다시 30분간 오븐에서 익힌다',
+      '오븐에서 그릇을 꺼내서 15분간 식힌 다음에 상추를 곁들여서 내놓는다'
+    ]
+  },
+  {
+    name: '생선 타코',
+    ingredients: [
+      { name: '흰살생선', amount: 500, measurements: '그램' },
+      { name: '치즈',  amount: 1,   measurements: '장' },
+      { name: '아이스버그 상추',  amount: 2,   measurements: '컵' },
+      { name: '토마토',  amount: 2,   measurements: '개(큰 것)' },
+      { name: '또띠아',  amount: 3,   measurements: '개' },
+    ],
+    steps: [
+      '생선을 그릴에 익힌다',
+      '또띠아 3장 위에 생선을 얹는다',
+      '또띠아에 얹은 생선 위에 상추, 토마토, 치즈를 얹는다'
+    ]
+  }
+]
+
+// 조리법 하나를 표현하는 함수 컴포넌트 
+function Recipe({ name, ingredients, steps }) {
+  return (
+    <section id={name.toLowerCase().replace(/ /g, "-")}>
+      <h1>{name}</h1>
+      <ul className="ingredients">
+        { 
+          ingredients?.map((ingredient, i) => (
+            <li key={i}> {ingredient.name} </li>
+          ))
+        }
+      </ul>
+
+      <section className="instructions">
+        <h2>조리 절차</h2>
+        { 
+          steps.map((step, i) => (
+            <p key={i}>{step}</p>
+          ))
+        }
+      </section>
+    </section>
+  )
+}
+
+// 조리법으로 이뤄진 메뉴를 표현하는 상태가 없는 함수 컴포넌트 
+function Menu({ title, recipes }) {
+  return (
+    <article>
+      <header>
+        <h1>{title}</h1>
+      </header>
+
+      <div className="recipes">
+        { 
+          recipes.map((recipe, i) => (
+            <Recipe key={i} {...recipe} />
+          ))
+        }
+      </div>
+    </article>
+  )
+}
+
+// ReactDOM.render를 호출해서 Menu를 현재의 DOM 안에 렌더링
+ReactDOM.render(
+  <Menu recipes={data} title="맛있는 조리법" />,
+  document.getElementById('root')
+)
+```
+
+<img src="./images/05-03.png" alt="05-03">
+
+
