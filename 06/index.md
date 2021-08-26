@@ -28,3 +28,88 @@ export default function StarRating({ totalStars = 5 }) {
 }
 ```
 
+## 6.2 useState 훅 
+
+이제 StarRating 컴포넌트를 클릭할 수 있게 만들어야 된다.  
+사용자는 컴포넌트를 클릭해서 rating 을 변경할 수 있어야 한다.  
+리액트 상태에 이 값을 저장하고 변경하자.  
+
+상태를 리액트 함수 컴포넌트에 넣을 때는 **훅스**라고 부르는 리액트 기능을 사용한다.  
+훅스에는 컴포넌트 트리와 별도로 재사용가능한 코드 로직이 들어가있다.  
+
+우리가 제일 먼저 다룰 훅은 상태를 리액트 컴포넌트에 추가하고 싶을 때 사용하는 **useState 훅**이다.   
+
+```javascript
+import React, { useState } from 'react'
+import { FaStar } from 'react-icons/fa'
+
+... 
+
+export default function StarRating({ totalStars = 5 }) {
+  const [selectedStars] = useState(3)
+  return (
+    <>
+    {
+      createArray(totalStars).map((n, i) => (
+        <Star key={i} />
+      ))
+    }
+    <p>
+      {selectedStars} / {totalStars}
+    </p>
+    </>
+  )
+}
+```
+
+사용자가 선택한 별점을 저장하는 `selectedStars` 라는 상태변수를 만들어서,  
+`useState` 훅을 `StarRating` 컴포넌트에 직접 추가했다.  
+
+useState 훅은 배열을 반환하는 호출가능한 함수다.  
+이 배열의 **첫번째 값이 우리가 사용하려는 상태변수로, 함수에 전달하는 값은 상태 변수의 디폴트값**이다.  
+
+여기서는 selectedStars 가 초기값 3으로 설정된다. 
+
+이제 사용자로부터 다른 점수를 얻기 위해서는 사용자가 아무 별이나 클릭할 수 있게 해야한다.  
+
+```javascript
+const Star = ({ selected = false, onSelect = f => f }) => (
+  <FaStar color={selected ? 'red' : 'grey'} onClick={onSelect}  />
+)
+```
+
+star를 변경해서 onSelect 라는 프로퍼티를 추가한다.  
+사용자가 FaStar 컴포넌트를 클릭하면 이 함수를 호출하고, 부모 컴포넌트에게 별이 클릭되었음을 그대로 전달한다.  
+
+```javascript
+
+export default function StarRating({ totalStars = 5 }) {
+  const [selectedStars, setSelectedStars] = useState(3)
+  return (
+    <>
+    {
+      createArray(totalStars).map((n, i) => (
+        <Star 
+          key={i} 
+          selected={selectedStars > i} 
+          onSelect={() => setSelectedStars(i + 1)} />
+      ))
+    }
+    <p>
+      {selectedStars} / {totalStars}
+    </p>
+    </>
+  )
+}
+```
+StarRating 컴포넌트의 상태를 바꾸려면, selectedStars 의 값을 바꾸는 함수가 필요하다.  
+useState 훅이 반환하는 배열의 두번째 원소는 **상태 값을 변경할 때 쓸 수 있는 함수**다.  
+이 경우도 배열을 구조 분해해서 함수에 원하는 이름을 붙일 수 있다.  
+
+훅수에서 기억할 가장 중요한 내용은 훅이 걸린 컴포넌트를 렌더러와 연동시킨다는 점이다.  
+setSelectedStars 함수를 사용해 selectedStars 의 값을 바꿀 때마다  
+StarRating 함수 컴포넌트가 훅에 의해 다시 호출되면서 렌더링이 다시 이뤄진다.  
+
+훅에 걸린 데이터가 변경되면 데이터에 대한 훅이 걸린 컴포넌트에 새 값을 전달하면서 컴포넌트를 다시 렌더링해준다.  
+
+<img src="./images/06-2-click.gif" />
