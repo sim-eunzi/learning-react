@@ -1,0 +1,22 @@
+{
+  "colors": [
+    {
+      "id": "017d1f0-a8c6-41bf",
+      "title": "해질녘 바다",
+      "color": "#00c4e2",
+      "rating": 5
+    },
+    {
+      "id": "83c7ba2f-7392-4d7c",
+      "title": "잔디",
+      "color": "#26ac56",
+      "rating": 3
+    },
+    {
+      "id": "a11e39950-b0bd-4d58",
+      "title": "밝은 빨강",
+      "color": "#ff0000",
+      "rating": 0
+    }
+  ]
+}

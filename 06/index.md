@@ -129,3 +129,89 @@ export default function StarRating({ style={}, totalStars = 5 }) {
     <div style={{ padding: "5px", ...style }}>
 ...
 ```
+
+## 6.4 컴포넌트 트리 안의 상태  
+
+모든 컴포넌트에 상태를 넣는 것은 좋은 생각이 아니다.  
+상태 데이터가 너무 많은 컴포넌트에 분산되면, 버그를 추적하거나 애플리케이션의 기능을 변경하기가 어려워진다.  
+
+애플리케이션의 상태나 어떤 특성의 상태를 한곳에서 관리할 수 있으면 상태를 이해하기가 더 쉬워진다.  
+
+제일 먼저 살펴볼 것은 상태를 컴포넌트 트리에 저장하고, 자식 컴포넌트들에게 prop으로 전달하는 방법이다.  
+
+`create-react-app` 으로 색 관리자 웹앱을 만들어보자.  
+
+`color-data.json` 파일에 3가지 색으로 이뤄진 배열이 있다.  
+각 색에는 id, title, color, rating 이 있고, 이 데이터를 표시할 리액트 컴포넌트를 만들어보자.  
+
+
+```
+# 폴더 구조 
+
+\src
+  \components
+    - StarRating.js
+    - ColorList.js 
+    - Color.js
+  \data
+    - color-data.json
+  - App.js
+  - index.js 
+```
+
+
+
+```javascript
+// src/App.js 
+import React, { useState } from "react"
+import colorData from './data/color-data.json'
+import ColorList from './components/ColorList'
+
+export default function App() {
+  const [colors] = useState(colorData)
+  return ( <ColorList colors={colors.colors} /> );
+}
+```
+
+최상위 App 컴포넌트는 useState 를 추가해 색의 상태관리를 연결했다.  
+App 컴포넌트는 colorData를 colors의 초기 상태로 사용한다.  
+App으로부터 colors가 ColorList라는 컴포넌트에게 전달된다.  
+
+```javascript
+// src/components/ColorList.js
+
+import React from 'react'
+import Color from './Color'
+
+export default function ColorList({ colors }) {
+  if(!colors.length) return <div>표시할 색이 없습니다</div>
+  return (<div>{ colors.map(color => <Color key={color.id} {...color} />)}</div>)
+}
+```
+
+ColorList 컴포넌트는 prop으로 App 컴포넌트에게서 색을 전달받는다.  
+colors가 비어있으면 메세지를, 배열이 있으면 이 배열에 대해 map을 수행하고,  
+세부 정보를 Color 컴포넌트를 만들면서 트리의 아래 방향으로 각 색 정보를 내려보낸다. 
+
+```javascript
+// src/components/Color.js
+import StarRating from './StarRating'
+
+export default function Color({title, color, rating}) {
+  return (
+    <section>
+      <h1>{title}</h1>
+      <div style={{ height: 50, backgroundColor: color}} />
+      <StarRating selectedStars={rating} />
+    </section>
+  )
+}
+```
+
+Color 컴포넌트는 title, color, rating 이라는 세 프로퍼티를 받는다.  
+각 값은 `<Color {...color} />`를 통해 스프레드 연산자로 전달받는다.  
+이 식은 color 객체에 있는 각 필드를 color 객체의 각 키와 똑같은 키를 가지는 프로퍼티로 Color 컴포넌트에 전달한다. 
+
+이제 App 컴포넌트에서 데이터를 트리의 아래로 내려보내서 각 데이터에 맞게 표시하는 웹앱을 만들었다.  
+
+<img src="./images/06-4.png">
