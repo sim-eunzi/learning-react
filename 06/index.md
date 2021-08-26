@@ -113,3 +113,19 @@ StarRating 함수 컴포넌트가 훅에 의해 다시 호출되면서 렌더링
 훅에 걸린 데이터가 변경되면 데이터에 대한 훅이 걸린 컴포넌트에 새 값을 전달하면서 컴포넌트를 다시 렌더링해준다.  
 
 <img src="./images/06-2-click.gif" />
+
+## 6.3 재사용성을 높이기 위한 리팩터링 
+
+StarRating 컴포넌트를 이제 다른 곳에서 활용할 수 있다.  
+하지만 좀 더 사용성을 위해 몇 가지를 생각해봐야 한다.  
+
+**style 프로퍼티**를 생각해보자.  
+이 프로퍼티를 사용하면 CSS 스타일을 엘리먼트에 추가할 수 있다.  
+
+```javascript
+export default function StarRating({ style={}, totalStars = 5 }) {
+  const [selectedStars, setSelectedStars] = useState(3)
+  return (
+    <div style={{ padding: "5px", ...style }}>
+...
+```
