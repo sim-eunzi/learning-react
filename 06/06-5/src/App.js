@@ -18,10 +18,16 @@ export default function App() {
     setColors(newColors);
   };
 
+  const addColor = (title, color) => {
+    const newColor = [ ...colors ]
+    newColor.push({ title, color, rating: 0, id: (newColor.length + 1) });
+    setColors(newColor);
+  }
+
   return (
     <>
       <AddColorForm
-          onNewColor={(title, color) => alert(`TODO: Create ${title} - ${color}`)}
+          onNewColor={(title, color) => addColor(title, color)}
       />
       <ColorList
         colors={colors}

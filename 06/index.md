@@ -358,3 +358,21 @@ title, color 변수를 만들고, 상태를 변경할 `setTitle`, `setColor` 함
 
 현 시점에서 값을 변경할 수 있는 방법은 input 엘리먼트에서 문자를 입력할 때마다 상태 변수를 변경하는 것 뿐이다.   
 `onChange={e => setTitle(e.target.value)}` 를 사용해, 이벤트가 발생하면 현재 엘리먼트의 value를 알 수 있다.  
+
+
+### 6.5.3 커스텀 훅 만들기  
+
+제어가 되는 폼 컴포넌트를 만들 때 필요한 세부 사항을 커스텀 훅으로 묶을 수 있다.  
+폼 입력을 만들 때 필요한 중복을 추상화해 없애주는 우리만의 `useInput` 훅을 만들 수 있다.  
+
+```javascript
+import { useState } from 'react'
+
+export const useInput = initialValue => {
+  const [value, setValue] = useState(initialValue)
+  return [
+    { value, onChange: e => setValue(e.target.value) },
+    () => setValue(initialValue)
+  ]
+}
+```
