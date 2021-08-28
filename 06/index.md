@@ -215,3 +215,146 @@ Color 컴포넌트는 title, color, rating 이라는 세 프로퍼티를 받는�
 이제 App 컴포넌트에서 데이터를 트리의 아래로 내려보내서 각 데이터에 맞게 표시하는 웹앱을 만들었다.  
 
 <img src="./images/06-4.png">
+
+### 6.4.2 상호작용을 컴포넌트 트리 위로 전달하기  
+
+지금까지는 부모 컴포넌트에서 자식 컴포넌트에게 데이터를 내려주는 방식으로 colors 배열을 렌더링 했다.  
+
+리스트에서 내려온 색의 평점을 변경하면 어떤 일이 생길까?  
+colors 데이터는 트리의 루트에 존재한다.  
+
+따라서 자식 컴포넌트에 대해 벌어진 상호작용을 수집해서 트리의 위로 올려보내, 상태가 저장된 루트 컴포넌트에 도착하게 해야한다.  
+
+```javascript
+import { FaTrash } from 'react-icons/fa'
+
+export default function Color({id, title, color, rating, onRemove = f => f}) {
+  return (
+    <section>
+      <h1>{title}</h1>
+      <button onClick={() => onRemove(id)}>
+        <FaTrash />
+      </button>
+      <div style={{ height: 50, backgroundColor: color}} />
+      <StarRating selectedStars={rating} />
+    </section>
+  )
+}
+```
+
+color 컴포넌트 안에 사용자가 삭제할 수 있는 버튼을 만들고,  
+버튼에 onClick 핸들러를 추가해 onRemove 함수 프로퍼티를 호출할 수 있다.  
+
+이런 방식이 뛰어난 이유는 Color 컴포넌트를 **순수 컴포넌트로 유지**할 수 있기 때문이다. 
+Color 컴포넌트에는 상태가 없기 때문에 다른 애플리케이션에서 자유롭게 재사용할 수 있다.  
+그리고 이벤트를 처리할 책임은 이제 부모 컴포넌트의 몫이 된다.  
+
+```javascript
+export default function ColorList({ colors = [], onRemoveColor = f => f }) {
+  if(!colors.length) return <div>표시할 색이 없습니다</div>
+
+  return (
+    <div>
+      { colors.map(color => <Color key={color.id} {...color} onRemove={onRemoveColor} />)}
+    </div>
+  )
+}
+```
+
+## 6.5 폼 만들기 
+
+우리는 리액트를 사용해 수없이 많은 폼 컨포넌트를 만들게 될 것이다.  
+DOM 에서 사용할 수 있는 HTML 폼 엘리먼트 모두는 리액트 엘리먼트로도 제공된다.  
+
+```html
+<form>
+  <input type="text" placeholder="color title ..." required />
+  <input type="color" required>
+  <button>ADD</button>
+</form>
+```
+
+### 6.5.1 참조 사용하기  
+
+리액트에서 폼 컴포넌트를 만들어야 할 때는 몇 가지 패턴을 사용할 수 있다.  
+그 중 **참조(ref) 기능을 사용해 직접 DOM 에 접근하는 방법**이 포함된다.  
+
+리액트에서 참조는 컴포넌트의 생명주기 값을 저장하는 객체다.  
+리액트에서는 참조를 제공할 때 쓸 수 있는 `useRef` 훅을 제공한다.  
+
+```javascript
+import React, { useRef } from "react";
+
+export default function AddColorForm({ onNewColor = f => f }) {
+  const txtTitle = useRef();
+  const hexColor = useRef();
+
+  const submit = e => {
+    e.preventDefault();
+    const title = txtTitle.current.value;
+    const color = hexColor.current.value;
+    onNewColor(title, color);
+    txtTitle.current.value = "";
+    hexColor.current.value = "";
+  };
+
+  return (
+    <form onSubmit={submit}>
+      <input ref={txtTitle} type="text" placeholder="color title..." required />
+      <input ref={hexColor} type="color" required />
+      <button>ADD</button>
+    </form>
+  );
+}
+```
+
+useRef 훅을 사용해 2가지 참조를 만들었다.   
+input 태그에 ref 퍼티를 사용하면 참조의 값을 직접 JSX에서 설정할 수 있다.  
+
+사용자가 ADD 버튼으로 클릭해 폼을 제출하면 submit 함수를 호출한다.  
+HTML 폼을 제출 할 때 디폴트 동작은 현재 URL로 폼 엘리먼트에 저장된 값이 본문에 있는 POST 요청을 보내는 것이다.  
+우리는 이런 디폴트 동작을 막기 위해서 `e.preventDefault()` 코드를 작성한다  
+
+참조를 사용하면서 DOM 노드의 값을 직접 설정하면서 노드의 속성을 변경했다.  
+이런 코드는 명령형 코드로, 제어되지 않는 컴포넌트가 된다.  
+
+### 6.5.2 제어가 되는 컴포넌트    
+
+```javascript
+export default function AddColorForm({ onNewColor = f => f }) {
+  const [title, setTitle] = useState("");
+  const [color, setColor] = useState("#000000");
+
+  const submit = e => {
+    e.preventDefault();
+    onNewColor(title, color);
+    setTitle("");
+    setColor("");
+  };
+
+  return (
+    <form onSubmit={submit}>
+      <input
+        value={title}
+        onChange={event => setTitle(event.target.value)}
+        type="text"
+        placeholder="color title..."
+        required
+      />
+      <input
+        value={color}
+        onChange={event => setColor(event.target.value)}
+        type="color"
+        required
+      />
+      <button>ADD</button>
+    </form>
+  );
+}
+```
+
+제어가 되는 컴포넌트는 title, color 의 값을 리액트 상태를 통해 저장한다.  
+title, color 변수를 만들고, 상태를 변경할 `setTitle`, `setColor` 함수를 정의한다.  
+
+현 시점에서 값을 변경할 수 있는 방법은 input 엘리먼트에서 문자를 입력할 때마다 상태 변수를 변경하는 것 뿐이다.   
+`onChange={e => setTitle(e.target.value)}` 를 사용해, 이벤트가 발생하면 현재 엘리먼트의 value를 알 수 있다.  
