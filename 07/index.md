@@ -172,3 +172,94 @@ const useJazzyNews = () => {
 이 커스텀 훅에는 뉴스 피드를 처리하는 모든 기능이 들어있다.  
 또 다른 컴포넌트와 쉽게 공유할 수 있다는 뜻이다.  
 
+### useMemo 훅   
+
+`useMemo` 훅은 메모화된 값을 계산하는 함수를 호출한다.  
+메모화는 성능을 향상시키기 위한 기법으로, 함수 호출 결과를 저장하고 캐시한다.  
+그 후 같은 입력이 들어오면 캐시된 값을 반환한다.  
+
+useMemo는 우리가 전달한 함수를 사용해 메모화할 값을 계산함으로써 작동한다.  
+useMemo는 의존 관계가 바뀐 경우에만 이 값을 재계산한다.  
+useMemo도 useEffect와 마찬가지로 의존 관계 배열에 의존한다.  
+
+```javascript
+function WordCount({ children = '' }) {
+  useAnyKeyToRender()
+  const words = useMemo(() => children.split(''), [children])
+  useEffect(() => {
+    console.log('fresh render')
+  }, [words])
+}
+```
+
+words 배열은 children 프로퍼티에 의존하고, children이 바뀌면 그에 맞춰 words의 값도 재계산 해야한다.   
+이 코드에서 useMemo는 컴포넌트가 최초로 렌더링 될 때와 children 프로퍼티가 바뀔 때 words를 다시 계산한다.  
+
+
+`useCallback` 도 useMemo와 비슷하게 사용할 수 있다.  
+하지만 useCallback은 값 대신 함수를 메모화한다.  
+
+```javascript
+const fn = useCallback(() => {
+  console.log('hello')
+  console.log('world')
+}, [])
+
+useEffect(() => {
+  console.log('fresh render')
+  fn()
+}, [fn])
+```
+
+useCallback은 fn의 함수값을 메모화한다.  
+
+### 7.1.3 useLayoutEffect 를 사용해야 하는 경우  
+
+useEffect의 효과가 발생하기 전에 항상 렌더링이 이뤄진다는 사실을 알아봤다.  
+렌더링이 먼저 일어나고, 렌더링된 모든 값에 접근할 수 있는 상태에서 효과가 순서대로 발생한다.  
+
+useLayouEffect는 렌더링 사이클의 특정 순간에 호출되는데, 이벤트가 발생하는 순서는 다음과 같다.  
+
+(1) 렌더링   
+(2) useLayoutEffect 호출  
+(3) 브라우저의 화면 그리기 : 이 시점에 컴포넌트에 해당하는 엘리먼트가 실제로 DOM에 추가됨   
+(4) useEffect 호출
+
+```javascript
+import React, { useEffect, useLayoutEffect } from 'react'
+
+function App() {
+  useEffect(() => console.log('useEffect'))
+  useLayoutEffect(() => console.log('useLayoutEffect'))
+  return <div>Ready</div>
+}
+```
+
+App 컴포넌트에서는 useEffect 가 첫번째 훅이고, 그 후 useLayoutEffect 가 발생한다.  
+하지만 로그를 보면 useLayoutEffect 가 useEffect 보다 먼저 발생했음을 알 수 있다. 
+
+useLayoutEffect 는 브라우저가 **변경 내역을 화면에 그리기 전에 호출된다**  
+예를 들어 창의 크기가 바뀐 경우, 엘리먼트의 너비와 높이를 얻고 싶을 수 있다.  
+
+```javascript
+function useWindowSize {
+  const [width, setWidth] = useState(0)
+  const [height, setHeight] = useState(0)
+
+  const resize = () => {
+    setWidth(window.innerWidth)
+    setHeight(window.innerHeight)
+  }
+
+  useLayoutEffect(() => {
+    window.addEventListener('resize', resize)
+    resize()
+    return () => window.removeEventListener('resize', resize)
+  }, [])
+
+  return [width, height]
+}
+```
+
+창의 width, height는 브라우저가 화면을 그리기 전에 컴포넌트에 필요한 정보다.  
+useLayoutEffect 를 사용해서 화면을 그리기 전에 창의 width, height를 계산한다.  
