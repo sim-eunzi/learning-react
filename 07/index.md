@@ -268,11 +268,84 @@ useLayoutEffect 를 사용해서 화면을 그리기 전에 창의 width, height
 
 훅스를 사용할 때는 버그나 예기치 못한 동작을 방지하기 위해 염두에 둬야 하는 몇가지 규칙이 있다.  
 
-(1) 훅스는 컴포넌트 영역 안에서만 작동한다.  
+(1) **훅스는 컴포넌트 영역 안에서만 작동한다.**  
 
-(2) 기능을 여러 훅으로 나누면 좋다.  
+(2) **기능을 여러 훅으로 나누면 좋다.**  
 
-(3) 최상위 수준에서만 호출을 해야한다.   
-조건문이나 루프, 내포된 함수 안에서 훅을 사용해서는 안된다,  
+(3) **최상위 수준에서만 호출을 해야한다.**   
+조건문이나 루프, 내포된 함수 안에서 훅을 사용해서는 안된다.  
 
-(4)
+### 7.1.5 useReducer 로 코드 개선하기 
+
+Checkbox 컴포넌트를 생각해보자. 이 컴포넌트는 간단한 상태를 포함하는 컴포넌트의 완벽한 예다.  
+박스는 체크된 상태이거나 체크되지 않은 상태다.  
+checked가 상태 값, setChecked가 상태를 변경하는 함수다.  
+
+```javascript
+function Checkbox() {
+  const [checked, setChecked] = useState(false)
+
+  return (
+    <>
+      <input type="checkbox" value={checked} onChange={() => setChecked(checked => !checked)} />
+      {checked ? "checked" : "not checked"} 
+    </>
+  )
+}
+```
+
+위 코드는 잘 작동하지만 한 군데 위험해 보이는 곳이 있다.  
+`onChange={() => setChecked(checked => !checked)}`   
+처음에는 문제가 없겠지만 checked의 현재 값을 가지고 반대값을 반환하는 함수를 보낸다.  
+이 코드는 필요보다 너무 복잡하고, 잘못된 경우가 생길 가능성이 많다.  
+checked를 처리하는 대신 toggle과 같은 함수를 제공하면 어떨까?  
+
+```javascript
+function Checkbox() {
+  const [checked, setChecked] = useState(false)
+
+  function toggle() {
+    setChecked(checked => !checked)
+  }
+
+  return (
+    <>
+      <input type="checkbox" value={checked} onChange={toggle} />
+      {checked ? "checked" : "not checked"} 
+    </>
+  )
+}
+```
+위 코드처럼 예측 가능한 값인 toggle로 설정된다.  
+`setChecked(checked => !checked)` 를 이제는 **리듀서** 라는 다른 이름으로 부를 것이다.  
+
+리듀서 함수는 **현재 상태를 받아서 새 상태를 반환하는 함수라 할 수 있다.**  
+checked가 false면 이 함수는 반대 값인 true를 반환해야 한다.  
+이런 동작을 하드코딩하는 대신, **리듀서 함수로 추상화해서 항상 같은 결과를 내놓게 한다.**  
+
+
+이제 컴포넌트에 useState를 사용하는 대신, useReducer를 사용하자 
+
+```javascript
+function Checkbox() {
+  const [checked, toggle] = useReducer(checked => !checked, false)
+
+  return (
+    <>
+      <input type="checkbox" value={checked} onChange={toggle} />
+      {checked ? "checked" : "not checked"} 
+    </>
+  )
+}
+```
+
+여기서 useReducer는 리듀서 함수와, 초기 상태 false를 받는다.  
+그 후 onChange 함수를 리듀서가 반환하는 두 번째 값인 toggle로 설정한다.  
+
+이런 개념은 자바스크립트의 Array.reduce 와 닮아있다.  
+즉 함수와 초깃값을 받고 한 값을 반환한다.  
+
+```javascript
+const numbers = [28, 34, 67, 68]
+numbers.reduce((number, nextNumber) => number + nextNumber, 0)
+```
