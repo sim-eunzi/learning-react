@@ -198,5 +198,36 @@ HTTP 요청을 보낼 때는 정말 이 모든 경우를 처리해야 한다.
 요청이 진행 중이면 "Loading ... " 메세지를, 잘못된 경우에는 error의 세부정보를 표시해보자.
 
 ```javascript
+function GithubUser({ login }) {
+  const [data, setData] = useState();
+  const [error, setError] = useState();
+  const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    if (!login) return;
+    setLoading(true);
+    if (data && data.login === login) return;
+    fetch(`https://api.github.com/users/${login}`)
+      .then((response) => response.json())
+      .then(setData)
+      .then(() => setLoading(false))
+      .catch(setError);
+  }, [login]);
+
+  if (loading) return <h1> Loading ... </h1>;
+  if (error) return <pre>{JSON.stringify(data, null, 2)}</pre>;
+  if (!data) return null;
+
+  return (
+    <div className="githubUser">
+      <img src={data.avatar_url} alt={data.login} style={{ width: 200 }} />
+
+      <div>
+        <h1>{data.login}</h1>
+        {data.name && <p> {data.name} </p>}
+        {data.location && <p> {data.location} </p>}
+      </div>
+    </div>
+  );
+}
 ```
